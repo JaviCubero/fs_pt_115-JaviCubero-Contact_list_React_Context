@@ -31,7 +31,7 @@ export const getContactList = async (store, dispatch) => {
     };
 };
 
-const createContact = async (newContact, store, dispatch) => {
+export const createContact = async (newContact) => {
     const response = await fetch("https://playground.4geeks.com/contact/agendas/JaviCubero/contacts", {
         method: "POST",
         body: JSON.stringify(newContact),
@@ -42,8 +42,6 @@ const createContact = async (newContact, store, dispatch) => {
 
     if (response.ok) {
         const data = await response.json();
-        getContactList(store, dispatch)
-        navigate("/")
         return data;
     } else {
         console.log('error ', response.status, response.statusText);
@@ -51,20 +49,32 @@ const createContact = async (newContact, store, dispatch) => {
     };
 };
 
-export const editContact = async (id, newContact, dispatch, navigate) => {
+export const editContact = async (id, currentContact) => {
     const response = await fetch(`https://playground.4geeks.com/contact/agendas/JaviCubero/contacts/${id}`, {
         method: "PUT",
-        body: JSON.stringify(newContact),
+        body: JSON.stringify(currentContact),
         headers: {
             "Content-Type": "application/json"
         }
     });
 
     if (response.ok) {
-        getContacts(dispatch)
-        navigate("/")
         const data = await response.json();
         return data;
+    } else {
+        console.log("Error ", response.status, response.statusText);
+        return { error: { status: response.status, statusText: response.statusText } };
+    };
+};
+
+export const deleteContact = async (id, dispatch) => {
+    const response = await fetch(`https://playground.4geeks.com/contact/agendas/JaviCubero/contacts/${id}`, {
+        method: "DELETE",
+    });
+
+    if (response.ok) {
+        console.log("Contacto eliminado exitosamente pero sin respuesta JSON");
+        dispatch({ type: "deleteContact", payload: id});
     } else {
         console.log("Error ", response.status, response.statusText);
         return { error: { status: response.status, statusText: response.statusText } };
